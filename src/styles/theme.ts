@@ -1,4 +1,6 @@
-export const theme = {
+import { DefaultTheme } from 'styled-components';
+
+export const LigthTheme: DefaultTheme = {
     color: {
         background: '#eeeeee',
         cloud: '#bbeff1',
@@ -7,7 +9,7 @@ export const theme = {
         selected: '#6d6d6d',
     },
     typography: {
-        fontFamily: 'Montserrat, sans-serif',
+        fontFamily: 'Montserrat',
         weight: {
             default: 'medium',
             light: 'LightItalic',
