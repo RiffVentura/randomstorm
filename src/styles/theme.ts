@@ -11,16 +11,16 @@ export const LigthTheme: DefaultTheme = {
     typography: {
         fontFamily: 'Montserrat',
         weight: {
-            default: 'medium',
-            light: 'LightItalic',
-            bold: 'SemiBold',
-            icon: 'Bold',
+            default: '500',
+            light: '200',
+            bold: '700',
+            icon: '800',
         },
         size: {
-            default: 18,
-            title: 20,
-            big: 27,
-            icon: 32,
+            default: '18px',
+            title: '20px',
+            big: '27px',
+            icon: '32px',
         },
     },
 };

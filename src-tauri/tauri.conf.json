@@ -55,10 +55,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 800,
         "resizable": true,
         "title": "randomstorm",
-        "width": 800
+        "width": 1280
       }
     ]
   }

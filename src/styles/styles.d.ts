@@ -18,10 +18,10 @@ declare module 'styled-components' {
                 icon: string;
             };
             size: {
-                default: number;
-                title: number;
-                big: number;
-                icon: number;
+                default: string;
+                title: string;
+                big: string;
+                icon: string;
             };
         };
     }
