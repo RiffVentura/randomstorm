@@ -9,7 +9,11 @@ const sanitizeNumber = (value: string): number => {
 const random = (min: number, max: number): number =>
     min + Math.round(Math.random() * (max - min));
 
-export const NumberRandomizer = () => {
+type Props = {
+    onEdit: (id: string) => void;
+};
+
+export const NumberRandomizer = ({ onEdit }: Props) => {
     const [title, setTitle] = useState('Title');
     const [min, setMin] = useState(0);
     const [max, setMax] = useState(100);
@@ -18,7 +22,12 @@ export const NumberRandomizer = () => {
     return (
         <Frame>
             <Title value={title} onChange={newValue => setTitle(newValue)} />
-            <Value onClick={() => setValue(random(min, max))}>{value}</Value>
+            <Value
+                onClick={() => setValue(random(min, max))}
+                onDoubleClick={() => onEdit('ID')}
+            >
+                {value}
+            </Value>
             <Controls>
                 <Limit
                     value={min.toString()}
@@ -38,6 +47,7 @@ const Frame = styled.section`
     height: 180px;
     font-size: ${({ theme }) => theme.typography.size.default};
     font-weight: ${({ theme }) => theme.typography.weight.light};
+    background: ${({ theme }) => theme.color.widgetBackground};
     display: flex;
     flex-direction: column;
     box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.16);

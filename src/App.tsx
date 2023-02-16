@@ -1,26 +1,23 @@
-import styled, { ThemeProvider } from 'styled-components';
+import { useRef } from 'react';
+import { ThemeProvider } from 'styled-components';
+import { Edit } from './components/Edit';
+import { Grid } from './components/Grid';
+import { Scroller, ScrollerHandle } from './components/Scroller';
 import GlobalStyles from './styles/GlobalStyles';
-import { LigthTheme } from './styles/theme';
-import { NumberRandomizer } from './components/NumberRandomizer';
-
-const Container = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: 1px solid blue;
-    height: 100vh;
-`;
+import { LightTheme } from './styles/theme';
 
 function App() {
+    const scrollerRef = useRef<ScrollerHandle>(null);
+
     return (
-        <ThemeProvider theme={LigthTheme}>
+        <ThemeProvider theme={LightTheme}>
             <GlobalStyles />
-            <Container>
-                <NumberRandomizer />
-            </Container>
+            <Scroller
+                ref={scrollerRef}
+                top={<Edit onSave={() => scrollerRef.current?.toggle()} />}
+                bottom={<Grid onEdit={() => scrollerRef.current?.toggle()} />}
+            />
         </ThemeProvider>
     );
 }
-
 export default App;
