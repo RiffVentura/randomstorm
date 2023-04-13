@@ -1,30 +1,36 @@
 import { Randomizer } from './models/Randomizer';
 
-type RandomstormState = {
-    randomizers: Randomizer[];
-};
-
-type CreateAction = {
-    type: 'create';
-};
-
-type Action = CreateAction;
+type SaveAction = { type: 'save' };
+type EditRandomizerAction = { type: 'edit-randomizer'; slotId: number };
+type Action = EditRandomizerAction | SaveAction;
 
 const emptyRandomizerList = Array.from(Array(12).keys(), slot => ({
-    slot: slot + 1,
+    slot: slot,
     type: 'empty' as const,
     title: 'Label',
 }));
 
+type RandomstormState = {
+    randomizers: Randomizer[];
+    editRandomizer: Randomizer | null;
+};
+
 export const initialState: RandomstormState = {
     randomizers: emptyRandomizerList,
+    editRandomizer: null,
 };
 
 export const reducer = (state: RandomstormState, action: Action) => {
+    const newState = structuredClone(state) as RandomstormState;
+
     switch (action.type) {
-        case 'create':
-            return { ...state, randomizers: [...state.randomizers] };
+        case 'edit-randomizer':
+            newState.editRandomizer = newState.randomizers[action.slotId];
+            return newState;
+        case 'save':
+            newState.editRandomizer = null;
+            return newState;
         default:
-            throw new Error('Unsupported reducer action ' + action.type);
+            throw new Error('Unsupported reducer action');
     }
 };

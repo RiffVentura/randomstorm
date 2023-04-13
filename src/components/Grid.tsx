@@ -6,7 +6,7 @@ import { Randomizer } from '../models/Randomizer';
 
 type Props = {
     randomizers: Randomizer[];
-    onEdit: (id: string) => void;
+    onEdit: (id: number) => void;
 };
 
 export const Grid = ({ randomizers, onEdit }: Props) => {
@@ -14,11 +14,19 @@ export const Grid = ({ randomizers, onEdit }: Props) => {
         switch (randomizer.type) {
             case 'number':
                 return (
-                    <NumberRandomizer key={randomizer.slot} onEdit={onEdit} />
+                    <NumberRandomizer
+                        key={randomizer.slot}
+                        onEdit={() => onEdit(randomizer.slot)}
+                    />
                 );
             case 'empty':
             default:
-                return <EmptySlot key={randomizer.slot} />;
+                return (
+                    <EmptySlot
+                        key={randomizer.slot}
+                        onClick={() => onEdit(randomizer.slot)}
+                    />
+                );
         }
     });
 

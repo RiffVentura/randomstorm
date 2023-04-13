@@ -11,11 +11,22 @@ function App() {
     const [state, dispatch] = useReducer(reducer, initialState);
     const scrollerRef = useRef<ScrollerHandle>(null);
 
+    const handleEdit = (id: number) => {
+        dispatch({ type: 'edit-randomizer', slotId: id });
+        scrollerRef.current?.toggle();
+    };
+
+    const handleSave = () => {
+        dispatch({ type: 'save' });
+        scrollerRef.current?.toggle();
+    };
+
     const GridComponent = (
-        <Grid
-            randomizers={state.randomizers}
-            onEdit={() => scrollerRef.current?.toggle()}
-        />
+        <Grid randomizers={state.randomizers} onEdit={handleEdit} />
+    );
+
+    const EditComponent = (
+        <Edit randomizer={state.editRandomizer} onSave={handleSave} />
     );
 
     return (
@@ -23,7 +34,7 @@ function App() {
             <GlobalStyles />
             <Scroller
                 ref={scrollerRef}
-                top={<Edit onSave={() => scrollerRef.current?.toggle()} />}
+                top={EditComponent}
                 bottom={GridComponent}
             />
         </ThemeProvider>

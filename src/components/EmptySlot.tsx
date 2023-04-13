@@ -1,7 +1,11 @@
 import styled from 'styled-components';
 
-export const EmptySlot = () => {
-    return <Frame>+</Frame>;
+type Props = {
+    onClick: () => void;
+};
+
+export const EmptySlot = ({ onClick }: Props) => {
+    return <Frame onClick={onClick}>+</Frame>;
 };
 
 const Frame = styled.section`
@@ -10,6 +14,7 @@ const Frame = styled.section`
     font-size: 90px;
     font-weight: ${({ theme }) => theme.typography.weight.bold};
     background: ${({ theme }) => theme.color.background};
+    color: rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
