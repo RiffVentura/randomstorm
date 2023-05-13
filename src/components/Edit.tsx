@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Clouds from '../assets/clouds-top.svg';
 import { Randomizer } from '../models/Randomizer';
 import { IconButton } from './IconButton';
+import { Input } from './Input';
 
 type Props = {
     randomizer: Randomizer | null;
@@ -15,6 +16,8 @@ export const Edit = ({ randomizer, onSave }: Props) => {
     if (null === editedRandomizer) {
         return null;
     }
+
+    const type = 'number';
 
     return (
         <Container>
@@ -29,12 +32,26 @@ export const Edit = ({ randomizer, onSave }: Props) => {
                 />
                 <IconButton label='Number' icon='123.' onClick={() => null} />
             </section>
-            <ListValueSection>
-                <label>Entry list</label>
-                <Textarea
-                    placeholder='Place one entry per line like so : &#10;- Banana&#10;- Apple&#10;- Peach'
-                ></Textarea>
-            </ListValueSection>
+            {type === 'list' && (
+                <ListValueSection>
+                    <label>Entry list</label>
+                    <Textarea
+                        placeholder='Place one entry per line like so : &#10;- Banana&#10;- Apple&#10;- Peach'
+                    ></Textarea>
+                </ListValueSection>
+            )}
+            {type === 'number' && (
+                <NumberParameters>
+                    <NumberParameter>
+                        <label>Min</label>
+                        <Input value='0' onChange={() => null} />
+                    </NumberParameter>
+                    <NumberParameter>
+                        <label>Max</label>
+                        <Input value='0' onChange={() => null} />
+                    </NumberParameter>
+                </NumberParameters>
+            )}
             <SubmitControls>
                 <CancelButton onClick={onSave}>Cancel</CancelButton>
                 <SaveButton onClick={onSave}>Save</SaveButton>
@@ -89,6 +106,24 @@ const Textarea = styled.textarea`
     outline: none;
     &:hover {
         box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    }
+`;
+
+const NumberParameters = styled.div`
+    display: flex;
+    justify-content: space-around;
+    gap: 10%;
+    text-align: center;
+    margin-top: 100px;
+`;
+
+const NumberParameter = styled.div`
+    display: flex;
+    flex-direction: column;
+
+    & input {
+        margin-top: 10px;
+        text-align: center;
     }
 `;
 
