@@ -14,10 +14,13 @@ function App() {
     const GridComponent = (
         <Grid
             randomizers={state.randomizers}
-            onEdit={id => {
-                dispatch({ type: 'edit-randomizer', slotId: id });
+            onEdit={slotId => {
+                dispatch({ type: 'edit-randomizer', slotId });
                 scrollerRef.current?.toggle();
             }}
+            onQuickEdit={(slotId, values) =>
+                dispatch({ type: 'quick-edit', slotId, values })
+            }
         />
     );
 

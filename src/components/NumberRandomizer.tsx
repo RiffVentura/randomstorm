@@ -10,32 +10,47 @@ const random = (min: number, max: number): number =>
     min + Math.round(Math.random() * (max - min));
 
 type Props = {
-    onEdit: (id: string) => void;
+    title: string;
+    min: number;
+    max: number;
+    onQuickEdit: (value: {
+        title?: string;
+        min?: number;
+        max?: number;
+    }) => void;
+    onEdit: () => void;
 };
 
-export const NumberRandomizer = ({ onEdit }: Props) => {
-    const [title, setTitle] = useState('Title');
-    const [min, setMin] = useState(0);
-    const [max, setMax] = useState(100);
+export const NumberRandomizer = ({
+    title,
+    min,
+    max,
+    onEdit,
+    onQuickEdit,
+}: Props) => {
     const [value, setValue] = useState(random(min, max));
 
     return (
         <Frame>
-            <Title value={title} onChange={newValue => setTitle(newValue)} />
+            <Title value={title} onChange={title => onQuickEdit({ title })} />
             <Value
                 onClick={() => setValue(random(min, max))}
-                onDoubleClick={() => onEdit('ID')}
+                onDoubleClick={onEdit}
             >
                 {value}
             </Value>
             <Controls>
                 <Limit
                     value={min.toString()}
-                    onChange={newMin => setMin(sanitizeNumber(newMin))}
+                    onChange={newMin =>
+                        onQuickEdit({ min: sanitizeNumber(newMin) })
+                    }
                 />
                 <Limit
                     value={max.toString()}
-                    onChange={newMax => setMax(sanitizeNumber(newMax))}
+                    onChange={newMax =>
+                        onQuickEdit({ max: sanitizeNumber(newMax) })
+                    }
                 />
             </Controls>
         </Frame>

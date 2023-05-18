@@ -7,20 +7,32 @@ import { Randomizer } from '../models/Randomizer';
 type Props = {
     randomizers: Randomizer[];
     onEdit: (id: number) => void;
+    onQuickEdit: (
+        slotId: number,
+        value: {
+            title?: string;
+            min?: number;
+            max?: number;
+        },
+    ) => void;
 };
 
-export const Grid = ({ randomizers, onEdit }: Props) => {
-    const randomizerComponents = randomizers.map((randomizer, index) => {
+export const Grid = ({ randomizers, onEdit, onQuickEdit }: Props) => {
+    const randomizerComponents = randomizers.map((randomizer, slotId) => {
         if (randomizer === null) {
-            return <EmptySlot key={index} onClick={() => onEdit(index)} />;
+            return <EmptySlot key={slotId} onClick={() => onEdit(slotId)} />;
         }
 
         switch (randomizer.type) {
             case 'number':
                 return (
                     <NumberRandomizer
-                        key={index}
-                        onEdit={() => onEdit(index)}
+                        key={slotId}
+                        title={randomizer.title}
+                        min={randomizer.min}
+                        max={randomizer.max}
+                        onEdit={() => onEdit(slotId)}
+                        onQuickEdit={values => onQuickEdit(slotId, values)}
                     />
                 );
             default:
