@@ -1,60 +1,147 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import Clouds from '../assets/clouds-top.svg';
-import { Randomizer } from '../models/Randomizer';
+import { Randomizer, RandomizerDraft } from '../models/Randomizer';
 import { IconButton } from './IconButton';
 import { Input } from './Input';
 
-type Props = {
-    randomizer: Randomizer | null;
-    onSave: () => void;
-};
-
-export const Edit = ({ randomizer, onSave }: Props) => {
-    const [editedRandomizer, setEditedRandomizer] = useState(randomizer);
-
-    if (null === editedRandomizer) {
-        return null;
+const castToRandomizerDraft = (randomizer: Randomizer): RandomizerDraft => {
+    if (randomizer === null) {
+        return {
+            title: 'Label',
+            type: 'list',
+            list: '',
+        };
     }
 
-    const type = 'number';
+    if (randomizer.type === 'number') {
+        return { ...randomizer };
+    } else if (randomizer.type === 'list') {
+        return { ...randomizer, list: randomizer.list.join('&#10') };
+    }
+
+    throw Error('Unknown randomizer type:');
+};
+
+const castToRandomizer = (randomizer: RandomizerDraft): Randomizer => {
+    if (randomizer.type === 'number') {
+        return { ...randomizer };
+    } else if (randomizer.type === 'list') {
+        return {
+            ...randomizer,
+            list: randomizer.list.split('\n').filter(value => value.length > 0),
+        };
+    }
+
+    throw Error('Unknown randomizer type:');
+};
+
+type Props = {
+    randomizer: Randomizer;
+    onSave: (randomizer: Randomizer) => void;
+    onCancel: () => void;
+};
+
+export const Edit = ({ randomizer, onSave, onCancel }: Props) => {
+    const [randomizerDraft, setRandomizerDraft] = useState(() =>
+        castToRandomizerDraft(randomizer),
+    );
 
     return (
         <Container>
             <img src={Clouds} />
-            <LabelInput value={editedRandomizer.title} />
+            <LabelInput
+                value={randomizerDraft.title}
+                onChange={event =>
+                    setRandomizerDraft({
+                        ...randomizerDraft,
+                        title: event.target.value,
+                    })
+                }
+            />
             <section>
                 <IconButton
                     label='List'
                     icon='abc.'
-                    onClick={() => null}
-                    selected
+                    onClick={() => {
+                        if (randomizerDraft.type === 'list') {
+                            return;
+                        }
+                        setRandomizerDraft({
+                            title: randomizerDraft.title,
+                            type: 'list',
+                            list: '',
+                        });
+                    }}
+                    selected={randomizerDraft.type === 'list'}
                 />
-                <IconButton label='Number' icon='123.' onClick={() => null} />
+                <IconButton
+                    label='Number'
+                    icon='123.'
+                    onClick={() => {
+                        if (randomizerDraft.type === 'number') {
+                            return;
+                        }
+                        setRandomizerDraft({
+                            title: randomizerDraft.title,
+                            type: 'number',
+                            min: 0,
+                            max: 100,
+                        });
+                    }}
+                    selected={randomizerDraft.type === 'number'}
+                />
             </section>
-            {type === 'list' && (
+            {randomizerDraft.type === 'list' && (
                 <ListValueSection>
                     <label>Entry list</label>
                     <Textarea
                         placeholder='Place one entry per line like so : &#10;- Banana&#10;- Apple&#10;- Peach'
+                        value={randomizerDraft.list}
+                        onChange={event =>
+                            setRandomizerDraft({
+                                ...randomizerDraft,
+                                list: event.target.value,
+                            })
+                        }
                     ></Textarea>
                 </ListValueSection>
             )}
-            {type === 'number' && (
+            {randomizerDraft.type === 'number' && (
                 <NumberParameters>
                     <NumberParameter>
                         <label>Min</label>
-                        <Input value='0' onChange={() => null} />
+                        <Input
+                            value={randomizerDraft.min.toString()}
+                            onChange={min =>
+                                setRandomizerDraft({
+                                    ...randomizerDraft,
+                                    min: parseInt(min),
+                                })
+                            }
+                        />
                     </NumberParameter>
                     <NumberParameter>
                         <label>Max</label>
-                        <Input value='0' onChange={() => null} />
+                        <Input
+                            value={randomizerDraft.max.toString()}
+                            onChange={max =>
+                                setRandomizerDraft({
+                                    ...randomizerDraft,
+                                    max: parseInt(max),
+                                })
+                            }
+                        />
                     </NumberParameter>
                 </NumberParameters>
             )}
             <SubmitControls>
-                <CancelButton onClick={onSave}>Cancel</CancelButton>
-                <SaveButton onClick={onSave}>Save</SaveButton>
+                <CancelButton onClick={onCancel}>Cancel</CancelButton>
+                <SaveButton
+                    onClick={() => onSave(castToRandomizer(randomizerDraft))}
+                >
+                    Save
+                </SaveButton>
             </SubmitControls>
         </Container>
     );

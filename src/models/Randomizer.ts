@@ -1,11 +1,4 @@
-type EmptyRandomizer = {
-    slot: number;
-    title: string;
-    type: 'empty';
-};
-
 type NumberRandomizer = {
-    slot: number;
     title: string;
     type: 'number';
     min: number;
@@ -13,9 +6,24 @@ type NumberRandomizer = {
 };
 
 type ListRandomizer = {
-    slot: number;
     title: string;
     type: 'list';
+    list: string[];
 };
 
-export type Randomizer = NumberRandomizer | EmptyRandomizer | ListRandomizer;
+export type Randomizer = NumberRandomizer | ListRandomizer | null;
+
+type ListRandomizerDraft = {
+    title: string;
+    type: 'list';
+    list: string;
+};
+
+type NumberRandomizerDraft = {
+    title: string;
+    type: 'number';
+    min: number;
+    max: number;
+};
+
+export type RandomizerDraft = ListRandomizerDraft | NumberRandomizerDraft;

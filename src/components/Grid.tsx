@@ -10,23 +10,21 @@ type Props = {
 };
 
 export const Grid = ({ randomizers, onEdit }: Props) => {
-    const randomizerComponents = randomizers.map(randomizer => {
+    const randomizerComponents = randomizers.map((randomizer, index) => {
+        if (randomizer === null) {
+            return <EmptySlot key={index} onClick={() => onEdit(index)} />;
+        }
+
         switch (randomizer.type) {
             case 'number':
                 return (
                     <NumberRandomizer
-                        key={randomizer.slot}
-                        onEdit={() => onEdit(randomizer.slot)}
+                        key={index}
+                        onEdit={() => onEdit(index)}
                     />
                 );
-            case 'empty':
             default:
-                return (
-                    <EmptySlot
-                        key={randomizer.slot}
-                        onClick={() => onEdit(randomizer.slot)}
-                    />
-                );
+                throw new Error('Unknown type');
         }
     });
 

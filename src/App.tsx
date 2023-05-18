@@ -11,22 +11,28 @@ function App() {
     const [state, dispatch] = useReducer(reducer, initialState);
     const scrollerRef = useRef<ScrollerHandle>(null);
 
-    const handleEdit = (id: number) => {
-        dispatch({ type: 'edit-randomizer', slotId: id });
-        scrollerRef.current?.toggle();
-    };
-
-    const handleSave = () => {
-        dispatch({ type: 'save' });
-        scrollerRef.current?.toggle();
-    };
-
     const GridComponent = (
-        <Grid randomizers={state.randomizers} onEdit={handleEdit} />
+        <Grid
+            randomizers={state.randomizers}
+            onEdit={id => {
+                dispatch({ type: 'edit-randomizer', slotId: id });
+                scrollerRef.current?.toggle();
+            }}
+        />
     );
 
     const EditComponent = (
-        <Edit randomizer={state.editRandomizer} onSave={handleSave} />
+        <Edit
+            randomizer={state.randomizers[state.editSlotId] ?? null}
+            onSave={randomizer => {
+                dispatch({ type: 'save', randomizer });
+                scrollerRef.current?.toggle();
+            }}
+            onCancel={() => {
+                dispatch({ type: 'cancel' });
+                scrollerRef.current?.toggle();
+            }}
+        />
     );
 
     return (

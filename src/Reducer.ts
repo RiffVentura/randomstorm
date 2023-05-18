@@ -1,36 +1,42 @@
 import { Randomizer } from './models/Randomizer';
 
-type SaveAction = { type: 'save' };
+type SaveAction = { type: 'save'; randomizer: Randomizer };
+type CancelAction = { type: 'cancel' };
 type EditRandomizerAction = { type: 'edit-randomizer'; slotId: number };
-type Action = EditRandomizerAction | SaveAction;
-
-const emptyRandomizerList = Array.from(Array(12).keys(), slot => ({
-    slot: slot,
-    type: 'empty' as const,
-    title: 'Label',
-}));
+type Action = EditRandomizerAction | SaveAction | CancelAction;
 
 type RandomstormState = {
     randomizers: Randomizer[];
-    editRandomizer: Randomizer | null;
+    editSlotId: number;
 };
 
 export const initialState: RandomstormState = {
-    randomizers: emptyRandomizerList,
-    editRandomizer: null,
+    randomizers: Array(12).fill(null),
+    editSlotId: -1,
 };
 
 export const reducer = (state: RandomstormState, action: Action) => {
     const newState = structuredClone(state) as RandomstormState;
 
-    switch (action.type) {
-        case 'edit-randomizer':
-            newState.editRandomizer = newState.randomizers[action.slotId];
-            return newState;
-        case 'save':
-            newState.editRandomizer = null;
-            return newState;
-        default:
-            throw new Error('Unsupported reducer action');
+    if (action.type === 'edit-randomizer') {
+        if (action.slotId < 0 || action.slotId >= state.randomizers.length) {
+            throw new Error('Editing an invalid slot number: ' + action.slotId);
+        }
+        newState.editSlotId = action.slotId;
+        return newState;
+    } else if (action.type === 'save') {
+        if (state.editSlotId === -1) {
+            throw new Error('Saving in a non editing mode');
+        }
+        newState.randomizers[newState.editSlotId] = structuredClone(
+            action.randomizer,
+        );
+        newState.editSlotId = -1;
+        return newState;
+    } else if (action.type === 'cancel') {
+        newState.editSlotId = -1;
+        return newState;
     }
+
+    throw new Error('Unsupported reducer action');
 };
