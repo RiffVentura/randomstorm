@@ -18,6 +18,9 @@ function App() {
                 dispatch({ type: 'edit-randomizer', slotId });
                 scrollerRef.current?.toggle();
             }}
+            onDelete={slotId => {
+                dispatch({ type: 'delete', slotId });
+            }}
             onQuickEdit={(slotId, values) =>
                 dispatch({ type: 'quick-edit', slotId, values })
             }

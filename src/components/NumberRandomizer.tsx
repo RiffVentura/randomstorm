@@ -19,6 +19,7 @@ type Props = {
         max?: number;
     }) => void;
     onEdit: () => void;
+    onDelete: () => void;
 };
 
 export const NumberRandomizer = ({
@@ -27,18 +28,18 @@ export const NumberRandomizer = ({
     max,
     onEdit,
     onQuickEdit,
+    onDelete,
 }: Props) => {
     const [value, setValue] = useState(random(min, max));
 
     return (
         <Frame>
-            <Title value={title} onChange={title => onQuickEdit({ title })} />
-            <Value
-                onClick={() => setValue(random(min, max))}
+            <Title
+                value={title}
+                onChange={title => onQuickEdit({ title })}
                 onDoubleClick={onEdit}
-            >
-                {value}
-            </Value>
+            />
+            <Value onClick={() => setValue(random(min, max))}>{value}</Value>
             <Controls>
                 <Limit
                     value={min.toString()}
@@ -53,6 +54,7 @@ export const NumberRandomizer = ({
                     }
                 />
             </Controls>
+            <Delete onClick={onDelete}>✖</Delete>
         </Frame>
     );
 };
@@ -69,6 +71,19 @@ const Frame = styled.section`
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
     padding: 1rem;
     user-select: none;
+    position: relative;
+
+    & > button {
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s,
+            opacity 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    }
+
+    &:hover > button {
+        visibility: visible;
+        opacity: 1;
+    }
 `;
 const Value = styled.div`
     flex: 1;
@@ -94,4 +109,23 @@ const Limit = styled(Input)`
 `;
 const Title = styled(Input)`
     text-align: center;
+`;
+
+const Delete = styled.button`
+    background-color: #b62727;
+    color: ${({ theme }) => theme.color.background};
+    font-size: 12px;
+    padding: 2px;
+    line-height: 1;
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    right: 1rem;
+    top: 1.3rem;
+    border-radius: 2px;
+
+    &:hover {
+        box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);
+        background-color: #c72f2f;
+    }
 `;

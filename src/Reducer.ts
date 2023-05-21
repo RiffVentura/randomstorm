@@ -3,6 +3,7 @@ import { Randomizer } from './models/Randomizer';
 type SaveAction = { type: 'save'; randomizer: Randomizer };
 type CancelAction = { type: 'cancel' };
 type EditRandomizerAction = { type: 'edit-randomizer'; slotId: number };
+type DeleteAction = { type: 'delete'; slotId: number };
 type QuickEditRandomizerAction = {
     type: 'quick-edit';
     slotId: number;
@@ -15,6 +16,7 @@ type QuickEditRandomizerAction = {
 type Action =
     | EditRandomizerAction
     | QuickEditRandomizerAction
+    | DeleteAction
     | SaveAction
     | CancelAction;
 
@@ -59,6 +61,12 @@ export const reducer = (state: RandomstormState, action: Action) => {
         return newState;
     } else if (action.type === 'cancel') {
         newState.editSlotId = -1;
+        return newState;
+    } else if (action.type === 'delete') {
+        if (action.slotId < 0 || action.slotId >= state.randomizers.length) {
+            throw new Error('Editing an invalid slot number: ' + action.slotId);
+        }
+        newState.randomizers[action.slotId] = null;
         return newState;
     }
 

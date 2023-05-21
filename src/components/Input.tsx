@@ -4,9 +4,10 @@ type Props = {
     className?: string;
     value: string;
     onChange: (newValue: string) => void;
+    onDoubleClick?: () => void;
 };
 
-export const Input = ({ value, onChange, className }: Props) => {
+export const Input = ({ value, onChange, className, onDoubleClick }: Props) => {
     return (
         <StyledInput
             className={className}
@@ -14,6 +15,7 @@ export const Input = ({ value, onChange, className }: Props) => {
             value={value}
             onChange={event => onChange(event.target.value)}
             onFocus={event => event.target.select()}
+            onDoubleClick={onDoubleClick}
         />
     );
 };

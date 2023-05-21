@@ -7,6 +7,7 @@ import { Randomizer } from '../models/Randomizer';
 type Props = {
     randomizers: Randomizer[];
     onEdit: (id: number) => void;
+    onDelete: (id: number) => void;
     onQuickEdit: (
         slotId: number,
         value: {
@@ -17,7 +18,7 @@ type Props = {
     ) => void;
 };
 
-export const Grid = ({ randomizers, onEdit, onQuickEdit }: Props) => {
+export const Grid = ({ randomizers, onEdit, onQuickEdit, onDelete }: Props) => {
     const randomizerComponents = randomizers.map((randomizer, slotId) => {
         if (randomizer === null) {
             return <EmptySlot key={slotId} onClick={() => onEdit(slotId)} />;
@@ -32,6 +33,7 @@ export const Grid = ({ randomizers, onEdit, onQuickEdit }: Props) => {
                         min={randomizer.min}
                         max={randomizer.max}
                         onEdit={() => onEdit(slotId)}
+                        onDelete={() => onDelete(slotId)}
                         onQuickEdit={values => onQuickEdit(slotId, values)}
                     />
                 );
