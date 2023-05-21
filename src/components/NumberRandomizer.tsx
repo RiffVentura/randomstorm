@@ -1,4 +1,4 @@
-import { forwardRef, useState, useImperativeHandle } from 'react';
+import { forwardRef, useState, useImperativeHandle, useCallback } from 'react';
 import styled from 'styled-components';
 import { Input } from './Input';
 import { RandomizerHandle } from '../models/Randomizer';
@@ -28,20 +28,31 @@ export const NumberRandomizer = forwardRef<RandomizerHandle, Props>(
         { title, min, max, onEdit, onQuickEdit, onDelete },
         ref,
     ) {
+        const [isLocked, setLocked] = useState(false);
         const [value, setValue] = useState(random(min, max));
+        const randomize = useCallback(() => {
+            if (isLocked) {
+                return;
+            }
+            setValue(random(min, max));
+        }, [isLocked, min, max]);
 
-        useImperativeHandle(ref, () => ({
-            randomize: () => setValue(random(min, max)),
-        }));
+        useImperativeHandle(ref, () => ({ randomize }));
 
         return (
-            <Frame>
+            <Frame isLocked={isLocked}>
                 <Title
                     value={title}
                     onChange={title => onQuickEdit({ title })}
                     onDoubleClick={onEdit}
                 />
-                <Value onClick={() => setValue(random(min, max))}>
+                <Value
+                    onClick={randomize}
+                    onContextMenu={event => {
+                        event.preventDefault();
+                        setLocked(!isLocked);
+                    }}
+                >
                     {value}
                 </Value>
                 <Controls>
@@ -64,12 +75,15 @@ export const NumberRandomizer = forwardRef<RandomizerHandle, Props>(
     },
 );
 
-const Frame = styled.section`
+const Frame = styled.section<{
+    isLocked: boolean;
+}>`
     width: 240px;
     height: 180px;
     font-size: ${({ theme }) => theme.typography.size.default};
     font-weight: ${({ theme }) => theme.typography.weight.light};
-    background: ${({ theme }) => theme.color.widgetBackground};
+    background: ${({ theme, isLocked }) =>
+        isLocked ? theme.color.locked : theme.color.widgetBackground};
     display: flex;
     flex-direction: column;
     box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.16);
