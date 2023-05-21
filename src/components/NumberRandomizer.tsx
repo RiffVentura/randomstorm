@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { forwardRef, useState, useImperativeHandle } from 'react';
 import styled from 'styled-components';
 import { Input } from './Input';
+import { RandomizerHandle } from '../models/Randomizer';
 
 const sanitizeNumber = (value: string): number => {
     return parseInt(value);
@@ -22,42 +23,46 @@ type Props = {
     onDelete: () => void;
 };
 
-export const NumberRandomizer = ({
-    title,
-    min,
-    max,
-    onEdit,
-    onQuickEdit,
-    onDelete,
-}: Props) => {
-    const [value, setValue] = useState(random(min, max));
+export const NumberRandomizer = forwardRef<RandomizerHandle, Props>(
+    function NumberRandomizer(
+        { title, min, max, onEdit, onQuickEdit, onDelete },
+        ref,
+    ) {
+        const [value, setValue] = useState(random(min, max));
 
-    return (
-        <Frame>
-            <Title
-                value={title}
-                onChange={title => onQuickEdit({ title })}
-                onDoubleClick={onEdit}
-            />
-            <Value onClick={() => setValue(random(min, max))}>{value}</Value>
-            <Controls>
-                <Limit
-                    value={min.toString()}
-                    onChange={newMin =>
-                        onQuickEdit({ min: sanitizeNumber(newMin) })
-                    }
+        useImperativeHandle(ref, () => ({
+            randomize: () => setValue(random(min, max)),
+        }));
+
+        return (
+            <Frame>
+                <Title
+                    value={title}
+                    onChange={title => onQuickEdit({ title })}
+                    onDoubleClick={onEdit}
                 />
-                <Limit
-                    value={max.toString()}
-                    onChange={newMax =>
-                        onQuickEdit({ max: sanitizeNumber(newMax) })
-                    }
-                />
-            </Controls>
-            <Delete onClick={onDelete}>✖</Delete>
-        </Frame>
-    );
-};
+                <Value onClick={() => setValue(random(min, max))}>
+                    {value}
+                </Value>
+                <Controls>
+                    <Limit
+                        value={min.toString()}
+                        onChange={newMin =>
+                            onQuickEdit({ min: sanitizeNumber(newMin) })
+                        }
+                    />
+                    <Limit
+                        value={max.toString()}
+                        onChange={newMax =>
+                            onQuickEdit({ max: sanitizeNumber(newMax) })
+                        }
+                    />
+                </Controls>
+                <Delete onClick={onDelete}>✖</Delete>
+            </Frame>
+        );
+    },
+);
 
 const Frame = styled.section`
     width: 240px;

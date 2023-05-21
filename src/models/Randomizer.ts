@@ -27,3 +27,7 @@ type NumberRandomizerDraft = {
 };
 
 export type RandomizerDraft = ListRandomizerDraft | NumberRandomizerDraft;
+
+export type RandomizerHandle = {
+    randomize: () => void;
+};
