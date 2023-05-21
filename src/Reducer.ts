@@ -1,5 +1,11 @@
 import { Randomizer } from './models/Randomizer';
 
+type QuickEditValues = {
+    title?: string;
+    min?: number;
+    max?: number;
+};
+
 type SaveAction = { type: 'save'; randomizer: Randomizer };
 type CancelAction = { type: 'cancel' };
 type EditRandomizerAction = { type: 'edit-randomizer'; slotId: number };
@@ -7,11 +13,7 @@ type DeleteAction = { type: 'delete'; slotId: number };
 type QuickEditRandomizerAction = {
     type: 'quick-edit';
     slotId: number;
-    values: {
-        title?: string;
-        min?: number;
-        max?: number;
-    };
+    values: QuickEditValues;
 };
 type Action =
     | EditRandomizerAction
@@ -26,49 +28,77 @@ type RandomstormState = {
 };
 
 export const initialState: RandomstormState = {
-    randomizers: Array(12).fill(null),
+    randomizers:
+        JSON.parse(localStorage.getItem('randomizers') ?? 'null') ??
+        Array(12).fill(null),
     editSlotId: -1,
 };
 
 export const reducer = (state: RandomstormState, action: Action) => {
     const newState = structuredClone(state) as RandomstormState;
 
-    if (action.type === 'edit-randomizer') {
-        if (action.slotId < 0 || action.slotId >= state.randomizers.length) {
-            throw new Error('Editing an invalid slot number: ' + action.slotId);
-        }
-        newState.editSlotId = action.slotId;
-        return newState;
-    } else if (action.type === 'quick-edit') {
-        const { slotId, values } = action;
-        if (slotId < 0 || action.slotId >= state.randomizers.length) {
-            throw new Error('Editing an invalid slot number: ' + slotId);
-        }
-
-        newState.randomizers[slotId] = {
-            ...state.randomizers[slotId],
-            ...values,
-        } as Randomizer;
-        return newState;
-    } else if (action.type === 'save') {
-        if (state.editSlotId === -1) {
-            throw new Error('Saving in a non editing mode');
-        }
-        newState.randomizers[newState.editSlotId] = structuredClone(
-            action.randomizer,
-        );
-        newState.editSlotId = -1;
-        return newState;
-    } else if (action.type === 'cancel') {
-        newState.editSlotId = -1;
-        return newState;
-    } else if (action.type === 'delete') {
-        if (action.slotId < 0 || action.slotId >= state.randomizers.length) {
-            throw new Error('Editing an invalid slot number: ' + action.slotId);
-        }
-        newState.randomizers[action.slotId] = null;
-        return newState;
+    switch (action.type) {
+        case 'edit-randomizer':
+            edit(newState, action.slotId);
+            break;
+        case 'quick-edit':
+            quickEdit(newState, action.slotId, action.values);
+            break;
+        case 'save':
+            save(newState, action.randomizer);
+            break;
+        case 'cancel':
+            cancel(newState);
+            break;
+        case 'delete':
+            remove(newState, action.slotId);
+            break;
+        default:
+            throw new Error('Unsupported reducer action');
     }
 
-    throw new Error('Unsupported reducer action');
+    localStorage.setItem('randomizers', JSON.stringify(newState.randomizers));
+
+    return newState;
+};
+
+const save = (state: RandomstormState, randomizer: Randomizer) => {
+    if (state.editSlotId === -1) {
+        throw new Error('Saving in a non editing mode');
+    }
+    state.randomizers[state.editSlotId] = structuredClone(randomizer);
+    state.editSlotId = -1;
+};
+
+const remove = (state: RandomstormState, slotId: number) => {
+    if (slotId < 0 || slotId >= state.randomizers.length) {
+        throw new Error('Editing an invalid slot number: ' + slotId);
+    }
+    state.randomizers[slotId] = null;
+};
+
+const cancel = (state: RandomstormState) => {
+    state.editSlotId = -1;
+};
+
+const edit = (state: RandomstormState, slotId: number) => {
+    if (slotId < 0 || slotId >= state.randomizers.length) {
+        throw new Error('Editing an invalid slot number: ' + slotId);
+    }
+    state.editSlotId = slotId;
+};
+
+const quickEdit = (
+    state: RandomstormState,
+    slotId: number,
+    values: QuickEditValues,
+) => {
+    if (slotId < 0 || slotId >= state.randomizers.length) {
+        throw new Error('Editing an invalid slot number: ' + slotId);
+    }
+
+    state.randomizers[slotId] = {
+        ...state.randomizers[slotId],
+        ...values,
+    } as Randomizer;
 };
