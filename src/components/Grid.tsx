@@ -4,6 +4,7 @@ import { NumberRandomizer } from './NumberRandomizer';
 import Clouds from '../assets/clouds-bottom.svg';
 import { EmptySlot } from './EmptySlot';
 import { Randomizer, RandomizerHandle } from '../models/Randomizer';
+import { ListRandomizer } from './ListRandomizer';
 
 const useSpacebarPress = (handler: () => void) => {
     const savedHandler = useRef<() => void>(() => null);
@@ -65,6 +66,18 @@ export const Grid = ({ randomizers, onEdit, onQuickEdit, onDelete }: Props) => {
                         title={randomizer.title}
                         min={randomizer.min}
                         max={randomizer.max}
+                        onEdit={() => onEdit(slotId)}
+                        onDelete={() => onDelete(slotId)}
+                        onQuickEdit={values => onQuickEdit(slotId, values)}
+                    />
+                );
+            case 'list':
+                return (
+                    <ListRandomizer
+                        key={slotId}
+                        ref={randomizersRef.current[slotId]}
+                        title={randomizer.title}
+                        list={randomizer.list}
                         onEdit={() => onEdit(slotId)}
                         onDelete={() => onDelete(slotId)}
                         onQuickEdit={values => onQuickEdit(slotId, values)}

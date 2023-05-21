@@ -3,39 +3,35 @@ import styled from 'styled-components';
 import { Input } from './Input';
 import { RandomizerHandle } from '../models/Randomizer';
 
-const sanitizeNumber = (value: string): number => {
-    return parseInt(value);
+const random = (list: string[]): string => {
+    if (list.length === 0) {
+        return '';
+    }
+    const randomIndex = Math.round(Math.random() * (list.length - 1));
+    return list[randomIndex];
 };
-
-const random = (min: number, max: number): number =>
-    min + Math.round(Math.random() * (max - min));
 
 type Props = {
     title: string;
-    min: number;
-    max: number;
-    onQuickEdit: (value: {
-        title?: string;
-        min?: number;
-        max?: number;
-    }) => void;
+    list: string[];
+    onQuickEdit: (value: { title?: string }) => void;
     onEdit: () => void;
     onDelete: () => void;
 };
 
-export const NumberRandomizer = forwardRef<RandomizerHandle, Props>(
-    function NumberRandomizer(
-        { title, min, max, onEdit, onQuickEdit, onDelete },
+export const ListRandomizer = forwardRef<RandomizerHandle, Props>(
+    function ListRandomizer(
+        { title, list, onEdit, onQuickEdit, onDelete },
         ref,
     ) {
         const [isLocked, setLocked] = useState(false);
-        const [value, setValue] = useState(() => random(min, max));
+        const [value, setValue] = useState(() => random(list));
         const randomize = useCallback(() => {
             if (isLocked) {
                 return;
             }
-            setValue(random(min, max));
-        }, [isLocked, min, max]);
+            setValue(random(list));
+        }, [isLocked, list]);
 
         useImperativeHandle(ref, () => ({ randomize }));
 
@@ -55,20 +51,6 @@ export const NumberRandomizer = forwardRef<RandomizerHandle, Props>(
                 >
                     {value}
                 </Value>
-                <Controls>
-                    <Limit
-                        value={min.toString()}
-                        onChange={newMin =>
-                            onQuickEdit({ min: sanitizeNumber(newMin) })
-                        }
-                    />
-                    <Limit
-                        value={max.toString()}
-                        onChange={newMax =>
-                            onQuickEdit({ max: sanitizeNumber(newMax) })
-                        }
-                    />
-                </Controls>
                 <Delete onClick={onDelete}>✖</Delete>
             </Frame>
         );
@@ -111,21 +93,13 @@ const Value = styled.div`
     justify-content: center;
     font-size: ${({ theme }) => theme.typography.size.big};
     font-weight: ${({ theme }) => theme.typography.weight.bold};
+    margin-bottom: 34px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 220px;
 `;
-const Controls = styled.div`
-    display: flex;
-    text-align: center;
-    & > :first-child {
-        text-align: left;
-    }
-    & > :last-child {
-        text-align: right;
-    }
-`;
-const Limit = styled(Input)`
-    width: 50%;
-    text-align: inherit;
-`;
+
 const Title = styled(Input)`
     text-align: center;
 `;

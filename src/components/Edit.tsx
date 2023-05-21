@@ -17,7 +17,7 @@ const castToRandomizerDraft = (randomizer: Randomizer): RandomizerDraft => {
     if (randomizer.type === 'number') {
         return { ...randomizer };
     } else if (randomizer.type === 'list') {
-        return { ...randomizer, list: randomizer.list.join('&#10') };
+        return { ...randomizer, list: randomizer.list.join('\n') };
     }
 
     throw Error('Unknown randomizer type:');
