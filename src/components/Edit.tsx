@@ -4,6 +4,7 @@ import Clouds from '../assets/clouds-top.svg';
 import { Randomizer, RandomizerDraft } from '../models/Randomizer';
 import { IconButton } from './IconButton';
 import { Input } from './Input';
+import { PresetsDropdown } from './PresetsDropdown';
 
 const castToRandomizerDraft = (randomizer: Randomizer): RandomizerDraft => {
     if (randomizer === null) {
@@ -94,7 +95,17 @@ export const Edit = ({ randomizer, onSave, onCancel }: Props) => {
             </section>
             {randomizerDraft.type === 'list' && (
                 <ListValueSection>
-                    <label>Entry list</label>
+                    <ListHeader>
+                        <ListTitle>Entry list</ListTitle>
+                        <PresetsDropdown
+                            onPresetValues={values =>
+                                setRandomizerDraft({
+                                    ...randomizerDraft,
+                                    list: values.join('\n'),
+                                })
+                            }
+                        />
+                    </ListHeader>
                     <Textarea
                         placeholder='Place one entry per line like so : &#10;- Banana&#10;- Apple&#10;- Peach'
                         value={randomizerDraft.list}
@@ -180,6 +191,18 @@ const ListValueSection = styled.section`
     display: flex;
     flex-direction: column;
 `;
+const ListHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+`;
+
+const ListTitle = styled.label`
+    line-height: 1;
+    font-size: ${({ theme }) => theme.typography.size.default};
+    padding: 10px 20px;
+`;
 
 const Textarea = styled.textarea`
     height: 200px;
@@ -189,6 +212,7 @@ const Textarea = styled.textarea`
     border-radius: 5px;
     padding: 20px;
     color: ${({ theme }) => theme.color.selected};
+    background-color: ${({ theme }) => theme.color.widgetBackground};
     font-family: ${({ theme }) => theme.typography.fontFamily}, sans-serif;
     outline: none;
     &:hover {
