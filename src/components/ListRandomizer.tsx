@@ -91,7 +91,7 @@ const Value = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: ${({ theme }) => theme.typography.size.big};
+    font-size: calc(8vw * ${({ theme }) => theme.typography.size.big});
     font-weight: ${({ theme }) => theme.typography.weight.bold};
     margin-bottom: 34px;
     overflow: hidden;
